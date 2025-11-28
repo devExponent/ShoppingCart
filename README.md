@@ -1,4 +1,4 @@
-🛒 Shopping Cart Application /n
+🛒 Shopping Cart Application
 A modern and responsive Shopping Cart built with React.js, styled using Tailwind CSS, and powered by Context API + useReducer for efficient global state management.
 This project demonstrates clean component architecture, predictable state flow, and reusable UI patterns.
 

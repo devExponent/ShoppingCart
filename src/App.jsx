@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { CartContext } from "./store/CartContext.jsx";
 
 import Header from "./components/Header.jsx";
@@ -70,15 +70,14 @@ function App() {
 
   const Cart = {
     items: shoppingCart.items,
+    addItems: handleAddItemToCart,
+    updatedItems: handleUpdateCartItemQuantity,
   };
 
   return (
     <>
       <CartContext value={Cart}>
-        <Header
-          cart={shoppingCart}
-          onUpdateCartItemQuantity={handleUpdateCartItemQuantity}
-        />
+        <Header />
         <Shop>
           {DUMMY_PRODUCTS.map((product) => (
             <li key={product.id}>

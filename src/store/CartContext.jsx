@@ -9,7 +9,7 @@ export const CartContext = createContext({
 
 const CartContextProvider = ({ children }) => {
   const cartReducer = (state, action) => {
-    if (type === "ADD_ITEM") {
+    if (action.type === "ADD_ITEM") {
       const updatedItems = [...state.items];
 
       const existingCartItemIndex = updatedItems.findIndex(
@@ -40,7 +40,7 @@ const CartContextProvider = ({ children }) => {
         items: updatedItems,
       };
     }
-    if (type === "UPDATE_QUANTITY") {
+    if (action.type === "UPDATE_QUANTITY") {
       const updatedItems = [...state.items];
       const updatedItemIndex = updatedItems.findIndex(
         (item) => item.id === action.productId

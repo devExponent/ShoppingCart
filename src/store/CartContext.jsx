@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useReducer, act } from "react";
 import { DUMMY_PRODUCTS } from "../dummy-products";
 
 export const CartContext = createContext({
@@ -8,16 +8,20 @@ export const CartContext = createContext({
 });
 
 const CartContextProvider = ({ children }) => {
-  const [shoppingCart, setShoppingCart] = useState({
+  // const [shoppingCart, setShoppingCart] = useState({
+  //   items: [],
+  // });
+
+  const [shoppingCart, shoppingCartDispatch] = useReducer(cartReducer, {
     items: [],
   });
 
-  function handleAddItemToCart(id) {
-    setShoppingCart((prevShoppingCart) => {
-      const updatedItems = [...prevShoppingCart.items];
+  const cartReducer = (state, action) => {
+    if (type === "ADD_ITEM") {
+      const updatedItems = [...state.items];
 
       const existingCartItemIndex = updatedItems.findIndex(
-        (cartItem) => cartItem.id === id
+        (cartItem) => cartItem.id === action.payload
       );
       const existingCartItem = updatedItems[existingCartItemIndex];
 
@@ -29,9 +33,11 @@ const CartContextProvider = ({ children }) => {
 
         updatedItems[existingCartItemIndex] = updatedItem;
       } else {
-        const product = DUMMY_PRODUCTS.find((product) => product.id === id);
+        const product = DUMMY_PRODUCTS.find(
+          (product) => product.id === action.payload
+        );
         updatedItems.push({
-          id: id,
+          id: action.payload,
           name: product.title,
           price: product.price,
           quantity: 1,
@@ -41,21 +47,18 @@ const CartContextProvider = ({ children }) => {
       return {
         items: updatedItems,
       };
-    });
-  }
-
-  function handleUpdateCartItemQuantity(productId, amount) {
-    setShoppingCart((prevShoppingCart) => {
-      const updatedItems = [...prevShoppingCart.items];
+    }
+    if (type === "UPDATE_QUANTITY") {
+      const updatedItems = [...state.items];
       const updatedItemIndex = updatedItems.findIndex(
-        (item) => item.id === productId
+        (item) => item.id === action.productId
       );
 
       const updatedItem = {
         ...updatedItems[updatedItemIndex],
       };
 
-      updatedItem.quantity += amount;
+      updatedItem.quantity += action.amount;
 
       if (updatedItem.quantity <= 0) {
         updatedItems.splice(updatedItemIndex, 1);
@@ -66,13 +69,30 @@ const CartContextProvider = ({ children }) => {
       return {
         items: updatedItems,
       };
+    }
+
+    return state;
+  };
+
+  function handleAddItemToCart(id) {
+    shoppingCartDispatch({
+      type: "ADD_ITEM",
+      payload: id,
+    });
+  }
+
+  function handleUpdateCartItemQuantity(productId, amount) {
+    shoppingCartDispatch({
+      type: "UPDATE_QUANTITY",
+      productId: productId,
+      amount: amount,
     });
   }
 
   const Cart = {
     items: shoppingCart.items,
     addItems: handleAddItemToCart,
-    updatedItems: handleUpdateCartItemQuantity,
+    updatedItemsQuantity: handleUpdateCartItemQuantity,
   };
   return <CartContext value={Cart}>{children}</CartContext>;
 };
